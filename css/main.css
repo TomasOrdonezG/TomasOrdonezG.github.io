@@ -1,0 +1,171 @@
+
+/* 
+# targets all ids 
+. targets all classes
+*/
+
+html, body {
+   margin: 0;
+   padding: 0;
+}
+
+:root {
+   --skew: -10deg;
+}
+
+.half {
+   margin: 0;
+   padding: 0;
+   background-color: rgba(255, 120, 36, 0.742); 
+   float: left;
+   width: 100vw;
+   height: 100vh;
+   position: absolute;
+   top: 0;
+   left: -50%;
+   transform-origin: 0 50%;
+   transform: skewX(var(--skew));
+}
+
+h1 {
+   position: absolute;
+   top: 45%;
+   font-family: monospace;
+   left: 74.5%;
+   color: black;
+   font-size: 50px;
+   z-index: 1;
+   transform: translate(-50%, -50%) skewX(calc(-1 * var(--skew)));
+   transform-origin: center center;
+}
+
+img {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   height: auto;
+   max-width: 50%;
+   display: block;
+   margin: 0 auto;
+   z-index: 0;
+}
+
+header {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 70px;
+   background-color: #444;
+}
+
+nav {
+   transform: skewX(var(--skew));
+   right: 0;
+   width: 100%;
+   z-index: 2;
+}
+
+nav ul {
+   list-style: none;
+   display: flex;
+   justify-content: flex-end;
+   align-items: center;
+}
+
+#github {
+   background-color: rgba(136, 157, 162, 255);
+}
+
+#hobbies {
+   background-color: rgba(221, 181, 169, 255);
+}
+
+#about {
+   background-color: rgba(232, 163, 124, 255);
+}
+
+#contact {
+   background-color: rgba(254, 169, 79, 255);
+}
+
+#home {
+   background-color: rgba(77, 131, 130, 51);
+   padding-right: 30px;
+   margin-right: -10px;
+}
+
+nav li {
+   position: relative;
+   /* margin: -0.5px; */
+   padding: 18px;
+   height: 26px;
+   padding-top: 27px;
+}
+
+nav li:hover {
+   transform: translateY(10px) translateX(-10px);
+}
+
+nav a {
+   font-size: 16px;
+   font-family: monospace;
+   text-decoration: none;
+   color: black;
+}
+
+nav a:hover {
+   text-decoration: underline;
+} 
+
+.side-box {
+   position: absolute;
+   background-color: inherit;
+   top: -7px;
+   right: -10px;
+   width: 11px;
+   height: 110%;
+   transform-origin: left bottom;
+   transform: skewY(-45deg);
+}
+
+.top-box {
+   position: absolute;
+   background-color: inherit;
+   top: -10px;
+   right: 0px;
+   width: 100%;
+   height: 10px;
+   transform-origin: right bottom;
+   transform: skewX(-45deg);
+}
+
+/* media query for smaller screens, such as mobile devices */
+@media only screen and (max-width: 768px) {
+   .half {
+      margin: 0;
+      padding: 0;
+      background-color: rgba(255, 120, 36, 0.742); 
+      float: top;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: -60%;
+      left: 0;
+      transform-origin: 0 50%;
+      --skew: 10deg;
+      transform: skewY(var(--skew));
+   }
+   
+   h1 {
+      position: absolute;
+      left: 50%;
+      top: 75%;
+      font-family: monospace;
+      color: black;
+      font-size: 25px;
+      z-index: 1;
+      transform: translate(-50%, -50%) skewY(calc(-1 * var(--skew)));
+      transform-origin: center center;
+   }
+}
