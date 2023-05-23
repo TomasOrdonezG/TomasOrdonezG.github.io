@@ -1,0 +1,23 @@
+@media only screen and (max-width: 600px) {
+   :root {
+      --cell-side: min(calc(20vh / var(--grid-h)), calc(50vw / var(--grid-w)));
+   }
+
+   /* ! CUBES */
+   
+   #grid {
+      right: 50%;
+      bottom: 20%;
+   }
+
+   /* ! PAGES */
+   :root {
+      --title-font-size: 10vw;
+      --description-font-size: 3vw;
+   }
+
+   #page-container {
+      width: 100vw;
+      height: calc(50vh - var(--title-font-size));
+   }
+}

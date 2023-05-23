@@ -2,6 +2,7 @@
 // *  General
 const root = document.documentElement;
 const rootStyles = getComputedStyle(root);
+const mobile = /Mobi|Android/i.test(navigator.userAgent);
 // *  HTML elements by ID
 const gridContainer = document.getElementById("grid");
 const pageContainer = document.getElementById("page-container");
@@ -12,6 +13,8 @@ const gridH = parseInt(rootStyles.getPropertyValue('--grid-h'));
 const defaultMargin = rootStyles.getPropertyValue('--hf-margin');
 const defaultColour = rootStyles.getPropertyValue('--hf-colour');
 const defaultSize = rootStyles.getPropertyValue('--hf-size');
+// *  Pages
+const mainPage = document.getElementById('main-page');
 
 function randomPages() {
    // * Creates random pages for HTML
@@ -50,11 +53,20 @@ function hoverSound() {
    sound.play();
 }
 
-function clearAllClicked() {
+function clearAllClickedCubes() {
    // * Removes the clicked class from all cubes
    const gridItems = document.querySelectorAll(".grid-item");
    gridItems.forEach(function(gridItem) {
       gridItem.classList.remove("clicked");
+   });
+}
+
+function hideAllPages() {
+   // * Removes the focus class from all pages and hides them
+   const pages = document.querySelectorAll(".focus");
+   pages.forEach(function(page) {
+      page.classList.remove("focus");
+      page.classList.add("hidden");
    });
 }
 
@@ -70,7 +82,7 @@ function updateHeaderFooter(colour, preview=false) {
    }
 }
 
-function previewPage(page, colour, preview) {
+function previewPage(page, colour, preview=true) {
    // * Changes the class of a page to .preview
    try {
       if (preview) {
@@ -80,10 +92,36 @@ function previewPage(page, colour, preview) {
       } else {
          page.classList.add("hidden");
          page.classList.remove('preview');
-         updateHeaderFooter(colour=defaultColour)
+         updateHeaderFooter(defaultColour)
       }
    } catch (error) {
       console.log(`Page is not created yet`);
+   }
+}
+
+function focusPage(page, colour, click=true) {
+   // * Changes the class of a page to .focus
+   try {
+      if (click) {
+         page.classList.remove("preview");
+         page.classList.remove("hidden");
+         page.classList.add('focus');
+         updateHeaderFooter(colour, false);
+      } else {
+         if (mobile) {
+            // Do not preview the page when unclicked on mobile, simply hide it
+            page.classList.add('hidden');
+            updateHeaderFooter(defaultColour);
+         } else {
+            previewPage(page, colour);
+         }
+         page.classList.remove('focus');
+         // Focuses the main page
+         mainPage.classList.add('focus');
+         mainPage.classList.remove('hidden');
+      }
+   } catch (error) {
+      console.log(error.message);
    }
 }
 
@@ -92,18 +130,26 @@ function gridItemsEvents(gridItem, page, mainColour) {
    // Click
    gridItem.addEventListener('click', function() {
       clickSound();
-      if (gridItem.classList.contains('clicked')) {
-         gridItem.classList.remove('clicked');
-      } else {
-         clearAllClicked();
+      if (!gridItem.classList.contains('clicked')) {
+         // * CLICK
+         clearAllClickedCubes();
+         hideAllPages();
          gridItem.classList.add('clicked');
+         focusPage(page, mainColour)
+         
+      } else {
+         // * UNCLICK
+         clearAllClickedCubes();
+         gridItem.classList.remove('clicked');
+         focusPage(page, mainColour, false)
       }
+      console.log(document.querySelectorAll('.focus').length);
    });
 
    // Hover
    gridItem.addEventListener('mouseenter', function() {
       if (!gridItem.classList.contains('clicked')) {
-         previewPage(page, mainColour, true);
+         previewPage(page, mainColour);
          hoverSound();
       }
    });
