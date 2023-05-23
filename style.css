@@ -115,11 +115,14 @@ body {
 }
 
 /* ! PAGES */
-
-#page-container {
+:root {
    --left-gap: 8%;
    --top-gap: 20%;
    --title-font-size: 4.57vw;
+   --description-font-size: 1vw;
+}
+
+#page-container {
    position: absolute;
    width: 61vw;
    height: 100vh;
@@ -141,8 +144,8 @@ body {
 .pages.focus {
    background-color: var(--bg-colour);
    position: absolute;
-   width: 61vw;
-   height: 100vh;
+   width: 100%;
+   height: 100%;
    top: 0;
    left: 0;
    transition: 0.5s ease;
@@ -153,8 +156,8 @@ body {
 .pages.hidden {
    opacity: 0;
    position: absolute;
-   width: 61vw;
-   height: 100vh;
+   width: 100%;
+   height: 100%;
    top: calc(var(--top-gap) + (1.15 * var(--title-font-size)));
    left: 0;
 
@@ -211,7 +214,7 @@ body {
    top: var(--top-gap);
    left: var(--left-gap);
    width: calc(100% - var(--left-gap));
-   font-size: 1vw;
+   font-size: var(--description-font-size);
    font-weight: 400;
    margin: 0;
    padding: 0;
