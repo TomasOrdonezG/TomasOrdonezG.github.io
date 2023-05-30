@@ -225,8 +225,8 @@ function createGridItems() {
          let ci = i + 2;
          let cj = j + 1;
          // 20, 9, 30
-         let r = 20 * cj * ci;
-         let g = 9 * cj * ci;
+         let r = 27 * cj * ci;
+         let g = 16 * cj * ci;
          let b = 30 * ci;
          const pageColour = `rgb(${r}, ${g}, ${b})`;
          gridItem.style.zIndex = -i+j;
