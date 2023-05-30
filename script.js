@@ -7,6 +7,7 @@ const mobile = /Mobi|Android/i.test(navigator.userAgent);
 const gridContainer = document.getElementById("grid");
 const pageContainer = document.getElementById("page-container");
 // *  Grid
+const bgColour = rootStyles.getPropertyValue('--bg-colour');
 const gridW = parseInt(rootStyles.getPropertyValue('--grid-w'));
 const gridH = parseInt(rootStyles.getPropertyValue('--grid-h'));
 // *  Footer and header
@@ -14,6 +15,7 @@ const defaultMargin = rootStyles.getPropertyValue('--hf-margin');
 const defaultColour = rootStyles.getPropertyValue('--hf-colour');
 const defaultSize = rootStyles.getPropertyValue('--hf-size');
 // *  Pages
+const homePageColour = 'bisque';
 const mainPage = document.getElementById('main-page');
 
 function randomPages() {
@@ -42,13 +44,13 @@ function randomPages() {
 }
 
 function clickSound() {
-   const sound = new Audio('audio/typewriter soft.wav');
+   const sound = new Audio('audio/bubble click.wav');
    sound.volume = 0.5;
    sound.play();
 }
 
 function hoverSound() {
-   const sound = new Audio('audio/bubble click.wav');
+   const sound = new Audio('audio/pop.mp3');
    sound.volume = 0.1;
    sound.play();
 }
@@ -71,7 +73,7 @@ function hideAllPages() {
 }
 
 function updateHeaderFooter(colour, preview=false) {
-   // * U[dates the styling of the footer by changing its CSS variables
+   // * Updates the styling of the footer by changing its CSS variables
    document.documentElement.style.setProperty('--hf-colour', colour);
    if (preview) {
       document.documentElement.style.setProperty('--hf-margin', '6%');
@@ -82,7 +84,7 @@ function updateHeaderFooter(colour, preview=false) {
    }
 }
 
-function previewPage(page, colour, preview=true) {
+function previewPage(page, colour, focusColour, preview=true) {
    // * Changes the class of a page to .preview
    try {
       if (preview) {
@@ -92,72 +94,112 @@ function previewPage(page, colour, preview=true) {
       } else {
          page.classList.add("hidden");
          page.classList.remove('preview');
-         updateHeaderFooter(defaultColour)
+         updateHeaderFooter(focusColour)
       }
    } catch (error) {
       console.log(`Page is not created yet`);
    }
 }
 
-function focusPage(page, colour, click=true) {
+function updateHighlight(colour) {
+   var css = `::selection {color: ${bgColour}; background-color: ${colour};}`;
+   head = document.head || document.getElementsByTagName('head')[0];
+   style = document.createElement('style');
+
+   style.type = 'text/css';
+   if (style.styleSheet){
+      // This is required for IE8 and below.
+      style.styleSheet.cssText = css;
+   } else {
+      style.appendChild(document.createTextNode(css));
+   }
+
+   head.appendChild(style);
+}
+
+function focusPage(page, focusColour, focus=true) {
    // * Changes the class of a page to .focus
-   try {
-      if (click) {
-         page.classList.remove("preview");
-         page.classList.remove("hidden");
-         page.classList.add('focus');
-         updateHeaderFooter(colour, false);
+   if (focus) {
+      // Change the classes and update hf
+      page.classList.remove("preview");
+      page.classList.remove("hidden");
+      page.classList.add('focus');
+      updateHeaderFooter(focusColour, false);
+
+      // Update styles
+      updateHighlight(focusColour);
+      updateBgColour(focusColour);
+   } else {
+      homePage();  // Focus home page
+      if (mobile) {
+         // Do not preview the page when unclicked on mobile, simply hide it
+         page.classList.add('hidden');
+         updateHeaderFooter(defaultColour);
       } else {
-         if (mobile) {
-            // Do not preview the page when unclicked on mobile, simply hide it
-            page.classList.add('hidden');
-            updateHeaderFooter(defaultColour);
-         } else {
-            previewPage(page, colour);
-         }
-         page.classList.remove('focus');
-         // Focuses the main page
-         mainPage.classList.add('focus');
-         mainPage.classList.remove('hidden');
+         previewPage(page, focusColour, focusColour);
       }
-   } catch (error) {
-      console.log(error.message);
+      page.classList.remove('focus');
+      // Focuses the main page
+      mainPage.classList.add('focus');
+      mainPage.classList.remove('hidden');
    }
 }
 
-function gridItemsEvents(gridItem, page, mainColour) {
+function getContrastingGray(originalColor) {
+   return bgColour;
+}
+
+function updateBgColour(focusColour) {
+   // * Sets the BG to the most contrast of the focus colour
+   root.style.setProperty('--bg-colour', getContrastingGray(focusColour));
+}
+
+function homePage() {
+   // * Focus on the home page
+   updateHighlight(homePageColour);  // Original highlight
+   updateBgColour(homePageColour);
+}
+
+function gridItemsEvents(gridItem, page, pageColour) {
    // * Event listeners for each grid item
-   // Click
+   focusColour = homePageColour;  // Initialize focus colour to home page colour
+   // Clicks
    gridItem.addEventListener('click', function() {
       clickSound();
       if (!gridItem.classList.contains('clicked')) {
-         // * CLICK
+         // * If home
+         if (page.classList.contains('home')) {
+            location.reload();
+         }
+
+
+         // * CLICK targeted cube
          clearAllClickedCubes();
          hideAllPages();
          gridItem.classList.add('clicked');
-         focusPage(page, mainColour)
+         focusPage(page, pageColour);  // Focus on clicked page
+         focusColour = pageColour;  // HF to matching page colour
          
       } else {
-         // * UNCLICK
+         // * UNCLICK targeted cube
          clearAllClickedCubes();
-         gridItem.classList.remove('clicked');
-         focusPage(page, mainColour, false)
+         focusPage(page, pageColour, false);  // Unfocus the current page
+         focusColour = homePageColour;  // HF to home page colour
       }
-      console.log(document.querySelectorAll('.focus').length);
    });
 
-   // Hover
+   // * Hover targeted cube
    gridItem.addEventListener('mouseenter', function() {
       if (!gridItem.classList.contains('clicked')) {
-         previewPage(page, mainColour);
+         previewPage(page, pageColour, focusColour);
          hoverSound();
       }
    });
 
-   // Hover ends
+   // * Hover ends targeted cube
    gridItem.addEventListener('mouseleave', function() {
       if (!gridItem.classList.contains('clicked')) {
-         previewPage(page, mainColour, false);
+         previewPage(page, pageColour, focusColour, false);
       }
    });
 }
@@ -179,21 +221,21 @@ function createGridItems() {
 
          // * Style
          // Set a background colour to the cells
-         // 15, 10, 30
          let shade = 10;
          let ci = i + 2;
          let cj = j + 1;
+         // 20, 9, 30
          let r = 20 * cj * ci;
          let g = 9 * cj * ci;
          let b = 30 * ci;
-         const mainColour = `rgb(${r}, ${g}, ${b})`;
+         const pageColour = `rgb(${r}, ${g}, ${b})`;
          gridItem.style.zIndex = -i+j;
-         gridItem.style.backgroundColor = mainColour;
+         gridItem.style.backgroundColor = pageColour;
          gridItemTop.style.backgroundColor = `rgb(${r - shade}, ${g - shade}, ${b - shade})`;
          gridItemSide.style.backgroundColor = `rgb(${r + shade}, ${g + shade}, ${b + shade})`;
          text.style.color = 'black';
          try {
-            page.style.color = mainColour;
+            page.style.color = pageColour;
          } catch (error) {
             console.log(`Page ${i}${j} is not created yet`);
          }
@@ -204,7 +246,7 @@ function createGridItems() {
          gridItemSide.classList.add("side-box");
 
          // * Add event listeners
-         gridItemsEvents(gridItem, page, mainColour)
+         gridItemsEvents(gridItem, page, pageColour)
 
          // * Assign to parent
          gridItem.appendChild(gridItemTop);
@@ -216,7 +258,9 @@ function createGridItems() {
 }
 
 function main() {
-   randomPages();
+   // randomPages();
    createGridItems();
+   updateHighlight(homePageColour);
+
 }
 main()

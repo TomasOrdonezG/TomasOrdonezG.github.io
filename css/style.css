@@ -1,8 +1,8 @@
 :root {
    --out-click: 48%;
    --out-hover: 24%;
-   --grid-w: 4;
-   --grid-h: 4;
+   --grid-w: 2;
+   --grid-h: 3;
    --side-angle: 45deg;
    --cell-side: min(calc(50vh / var(--grid-h)), calc(25vw / var(--grid-w)));
    --bg-colour: rgb(15, 15, 15);
@@ -132,12 +132,17 @@ body {
 
 /* * main page */
 #main-page {
-   --text-color: bisque;
-   color: var(--text-color);
+   --text-colour: bisque;
+   color: var(--text-colour);
 }
 #main-page span {
-   background-color: var(--text-color);
+   background-color: var(--text-colour);
    color: var(--bg-colour);
+}
+
+#main-page span::selection {
+   background-color: var(--bg-colour);
+   color: var(--text-colour);
 }
 
 /* * focus */
@@ -253,9 +258,4 @@ footer {
    background-color: var(--hf-colour);
    height: 1px;
    z-index: 5;
-}
-
-::selection {
-   background-color: rgb(120, 162, 255);
-   color: rgb(26, 26, 26); /* Set the text color when text is highlighted */
 }
